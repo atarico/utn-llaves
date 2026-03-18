@@ -12,6 +12,7 @@ interface EditModalProps {
 export const EditModal: React.FC<EditModalProps> = ({ entry, onEdit, isOpen, onOpenChange }) => {
   const [llave, setLlave] = useState(entry.llave);
   const [solicitante, setSolicitante] = useState(entry.solicitante);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -22,6 +23,8 @@ export const EditModal: React.FC<EditModalProps> = ({ entry, onEdit, isOpen, onO
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     onEdit(entry.id, llave, solicitante);
     onOpenChange(false);
   };
@@ -51,7 +54,9 @@ export const EditModal: React.FC<EditModalProps> = ({ entry, onEdit, isOpen, onO
                 value={llave}
                 onChange={(e) => setLlave(e.target.value.toUpperCase())}
                 required
-                className="font-mono flex h-10 w-full rounded-md border border-slate-300 bg-transparent px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-utn-blue focus:border-utn-blue"
+                maxLength={20}
+                disabled={isSubmitting}
+                className="font-mono flex h-10 w-full rounded-md border border-slate-300 bg-transparent px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-utn-blue focus:border-utn-blue disabled:opacity-50"
               />
             </div>
 
@@ -65,7 +70,9 @@ export const EditModal: React.FC<EditModalProps> = ({ entry, onEdit, isOpen, onO
                 value={solicitante}
                 onChange={(e) => setSolicitante(e.target.value)}
                 required
-                className="flex h-10 w-full rounded-md border border-slate-300 bg-transparent px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-utn-blue focus:border-utn-blue"
+                maxLength={50}
+                disabled={isSubmitting}
+                className="flex h-10 w-full rounded-md border border-slate-300 bg-transparent px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-utn-blue focus:border-utn-blue disabled:opacity-50"
               />
             </div>
             
@@ -75,8 +82,12 @@ export const EditModal: React.FC<EditModalProps> = ({ entry, onEdit, isOpen, onO
                   Cancelar
                 </button>
               </Dialog.Close>
-              <button type="submit" className="inline-flex items-center justify-center rounded-md bg-utn-blue px-4 py-2 text-sm font-medium text-white hover:bg-utn-navy focus:outline-none focus:ring-2 focus:ring-utn-blue focus:ring-offset-2">
-                Guardar Cambios
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="inline-flex items-center justify-center rounded-md bg-utn-blue px-4 py-2 text-sm font-medium text-white hover:bg-utn-navy focus:outline-none focus:ring-2 focus:ring-utn-blue focus:ring-offset-2 disabled:opacity-75 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
               </button>
             </div>
           </form>

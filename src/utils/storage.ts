@@ -5,7 +5,16 @@ const STORAGE_KEY = 'utn_llaves_jornadas';
 export const getJornadas = (): JornadaTurno[] => {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+    if (!data) return [];
+    
+    const parsed = JSON.parse(data);
+    // Schema Validation: Ensure the root object is an array to prevent crashes
+    if (!Array.isArray(parsed)) {
+      console.warn('Storage data corrupted (not an array), resetting to empty array.');
+      return [];
+    }
+    
+    return parsed;
   } catch (error) {
     console.error('Error reading localStorage:', error);
     return [];
@@ -15,7 +24,11 @@ export const getJornadas = (): JornadaTurno[] => {
 export const saveJornadas = (jornadas: JornadaTurno[]): void => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(jornadas));
-  } catch (error) {
+  } catch (error: unknown) {
+    // Handling QuotaExceededError avoiding silent fails
+    if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+      alert('Error: Espacio en disco local insuficiente. No se pueden guardar más llaves.');
+    }
     console.error('Error writing to localStorage:', error);
   }
 };

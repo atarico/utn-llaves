@@ -13,6 +13,7 @@ interface HandoverModalProps {
 export const HandoverModal: React.FC<HandoverModalProps> = ({ entry, onReturn, isOpen, onOpenChange }) => {
   const [isOtherPerson, setIsOtherPerson] = useState(false);
   const [quienDevuelve, setQuienDevuelve] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Auto-complete or clear based on switch
   const handleSwitchChange = (checked: boolean) => {
@@ -34,6 +35,8 @@ export const HandoverModal: React.FC<HandoverModalProps> = ({ entry, onReturn, i
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     onReturn(entry.id, quienDevuelve);
     onOpenChange(false);
   };
@@ -78,6 +81,8 @@ export const HandoverModal: React.FC<HandoverModalProps> = ({ entry, onReturn, i
                 onChange={(e) => setQuienDevuelve(e.target.value)}
                 readOnly={!isOtherPerson}
                 required
+                maxLength={50}
+                disabled={isSubmitting}
                 className="flex h-10 w-full rounded-md border border-slate-300 bg-transparent px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-utn-blue focus:border-utn-blue disabled:cursor-not-allowed disabled:opacity-50 read-only:bg-slate-50"
               />
             </div>
@@ -88,8 +93,12 @@ export const HandoverModal: React.FC<HandoverModalProps> = ({ entry, onReturn, i
                   Cancelar
                 </button>
               </Dialog.Close>
-              <button type="submit" className="inline-flex items-center justify-center rounded-md bg-utn-blue px-4 py-2 text-sm font-medium text-white hover:bg-utn-navy focus:outline-none focus:ring-2 focus:ring-utn-blue focus:ring-offset-2">
-                Confirmar Devolución
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="inline-flex items-center justify-center rounded-md bg-utn-blue px-4 py-2 text-sm font-medium text-white hover:bg-utn-navy focus:outline-none focus:ring-2 focus:ring-utn-blue focus:ring-offset-2 disabled:opacity-75 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? 'Registrando...' : 'Confirmar Devolución'}
               </button>
             </div>
           </form>

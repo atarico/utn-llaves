@@ -9,6 +9,7 @@ export const KeyForm: React.FC<{
   const [solicitante, setSolicitante] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [shouldFocus, setShouldFocus] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const llaveInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -20,6 +21,9 @@ export const KeyForm: React.FC<{
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
     setError(null);
     const result = addKey(llave, solicitante);
     
@@ -30,6 +34,7 @@ export const KeyForm: React.FC<{
     } else {
       setError(result.error || 'Error desconocido');
     }
+    setIsSubmitting(false);
   };
 
   return (
@@ -46,7 +51,9 @@ export const KeyForm: React.FC<{
               value={llave}
               onChange={(e) => setLlave(e.target.value.toUpperCase())}
               placeholder="Ej: F1, F5"
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-utn-blue focus:outline-none focus:ring-1 focus:ring-utn-blue font-mono"
+              maxLength={20}
+              disabled={isSubmitting}
+              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-utn-blue focus:outline-none focus:ring-1 focus:ring-utn-blue font-mono disabled:opacity-50"
               required
             />
           </div>
@@ -58,7 +65,9 @@ export const KeyForm: React.FC<{
               value={solicitante}
               onChange={(e) => setSolicitante(e.target.value)}
               placeholder="Nombre de quien retira"
-              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-utn-blue focus:outline-none focus:ring-1 focus:ring-utn-blue"
+              maxLength={50}
+              disabled={isSubmitting}
+              className="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-utn-blue focus:outline-none focus:ring-1 focus:ring-utn-blue disabled:opacity-50"
               required
             />
           </div>
@@ -69,10 +78,11 @@ export const KeyForm: React.FC<{
         <div className="flex justify-end">
           <button
             type="submit"
-            className="inline-flex items-center gap-2 bg-utn-blue hover:bg-utn-navy text-white px-4 py-2 rounded-md font-medium transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-utn-blue focus:ring-offset-2"
+            disabled={isSubmitting}
+            className="inline-flex items-center gap-2 bg-utn-blue hover:bg-utn-navy text-white px-4 py-2 rounded-md font-medium transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-utn-blue focus:ring-offset-2 disabled:opacity-75 disabled:cursor-not-allowed"
           >
             <Plus className="w-4 h-4" />
-            Registrar
+            {isSubmitting ? 'Registrando...' : 'Registrar'}
           </button>
         </div>
       </form>

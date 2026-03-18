@@ -18,9 +18,19 @@ export const useKeys = () => {
   }, [jornadas]);
 
   const addKey = useCallback((llave: string, solicitante: string): { success: boolean, error?: string } => {
-    const uppercaseLlave = llave.toUpperCase().trim();
+    // Basic sanitization: remove HTML-like tags to prevent XSS and deep trim
+    const sanitizedSolicitante = solicitante.replace(/[<>]/g, '').trim();
+    const uppercaseLlave = llave.replace(/[<>]/g, '').toUpperCase().trim();
+    
+    // Data Integrity: length and format validation
     if (!uppercaseLlave) return { success: false, error: 'La llave no puede estar vacía' };
-    if (!solicitante.trim()) return { success: false, error: 'El solicitante no puede estar vacío' };
+    if (uppercaseLlave.length > 20) return { success: false, error: 'La llave excede la longitud máxima (20)' };
+    if (!/^[A-Z0-9\s-]+$/.test(uppercaseLlave)) {
+      return { success: false, error: 'Formato de llave inválido (solo letras, números, espacios y guiones)' };
+    }
+
+    if (!sanitizedSolicitante) return { success: false, error: 'El solicitante no puede estar vacío' };
+    if (sanitizedSolicitante.length > 50) return { success: false, error: 'El nombre excede la longitud máxima (50)' };
 
     // Check if key is already active
     const isAlreadyActive = jornadas.some(j => 
@@ -35,7 +45,7 @@ export const useKeys = () => {
     const newEntry: KeyEntry = {
       id: uuidv4(),
       llave: uppercaseLlave,
-      solicitante: solicitante.trim(),
+      solicitante: sanitizedSolicitante,
       quienDevuelve: null,
       fechaPrestamo: new Date().toISOString(),
       fechaDevolucion: null,
@@ -70,7 +80,7 @@ export const useKeys = () => {
         if (t.id === id) {
           return {
             ...t,
-            quienDevuelve: quienDevuelve.trim() || t.solicitante,
+            quienDevuelve: quienDevuelve.replace(/[<>]/g, '').trim() || t.solicitante,
             fechaDevolucion: new Date().toISOString(),
             estado: 'DEVUELTO'
           };
@@ -87,8 +97,8 @@ export const useKeys = () => {
         if (t.id === id) {
           return {
             ...t,
-            llave: newLlave.toUpperCase().trim(),
-            solicitante: newSolicitante.trim(),
+            llave: newLlave.replace(/[<>]/g, '').toUpperCase().trim(),
+            solicitante: newSolicitante.replace(/[<>]/g, '').trim(),
             estado: 'EDITADO'
           };
         }
