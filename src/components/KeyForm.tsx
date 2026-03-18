@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import { useKeys } from '../hooks/useKeys';
 
@@ -8,7 +8,15 @@ export const KeyForm: React.FC<{
   const [llave, setLlave] = useState('');
   const [solicitante, setSolicitante] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [shouldFocus, setShouldFocus] = useState(false);
   const llaveInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (shouldFocus) {
+      llaveInputRef.current?.focus();
+      setShouldFocus(false);
+    }
+  }, [shouldFocus]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,10 +26,7 @@ export const KeyForm: React.FC<{
     if (result.success) {
       setLlave('');
       setSolicitante('');
-      // Use setTimeout to ensure focus happens after React un-disables/clears rendering if there was any delay
-      setTimeout(() => {
-        llaveInputRef.current?.focus();
-      }, 10);
+      setShouldFocus(true);
     } else {
       setError(result.error || 'Error desconocido');
     }
