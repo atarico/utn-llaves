@@ -1,6 +1,6 @@
-# UTN Llaves - Micro SaaS
+# UTN Llaves
 
-Un sistema de gestión (Micro SaaS) diseñado específicamente para el control, préstamo y devolución de llaves en la Universidad Tecnológica Nacional (UTN).
+Un sistema de gestión diseñado específicamente para el control, préstamo y devolución de llaves en la Universidad Tecnológica Nacional (UTN).
 
 ## 🚀 Características Principales
 
