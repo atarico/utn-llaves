@@ -7,3 +7,16 @@
     @apply font-sans antialiased text-slate-900 bg-utn-light;
   }
 }
+
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background-color: white !important;
+  }
+  
+  @page {
+    margin: 1cm;
+  }
+}
+
